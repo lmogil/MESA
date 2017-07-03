@@ -1,5 +1,8 @@
 ##done on stritch
-1.
+##GWAS QC for MESA african population
+##same QC done for hispanic and european populations
+
+#1. sex check and filter out missing genotypes 
 ./plink --bfile AFA_gtool_conversion_to_ped/afa_all_genexp --check-sex --missing --out AFA_gtool_conversion_to_ped/afa_all_genexp
 
 #24144 MB RAM detected; reserving 12072 MB for main workspace.
@@ -17,7 +20,7 @@
 #--check-sex: 657490 Xchr and 0 Ychr variant(s) scanned, 2 problems detected.
 #Report written to AFA_gtool_conversion_to_ped/afa_all_genexp.sexcheck 
 
-2.
+#2. Recalculate individual call rates after removing SNPs with call rates <99%
 ./plink --bfile AFA_gtool_conversion_to_ped/afa_all_genexp --geno 0.01 --make-bed --out AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01
 
 #24144 MB RAM detected; reserving 12072 MB for main workspace.
@@ -29,10 +32,7 @@
 #Total genotyping rate is 0.964319.
 #17211163 variants removed due to missing genotype data (--geno).
 #22083917 variants and 234 people pass filters and QC.
-
-3. 
 ./plink --bfile AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01 --missing  --out AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01
-
 #24144 MB RAM detected; reserving 12072 MB for main workspace.
 #22083917 variants loaded from .bim file.
 #234 people (102 males, 132 females) loaded from .fam.
@@ -45,10 +45,10 @@
 #missing data report written to
 #AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01.lmiss.
 
-4. 
+#3. Calculate HWE statistics to flag SNPs...use later for filtering 
 ./plink --bfile AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01 --hardy  --out AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01
 
-5. 
+#4. LD prune data (rm 1 SNP if r2>0.3 in 50 SNP window) for relationship check and heterozygosity calculation
 ./plink --bfile AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01 --indep-pairwise 50 5 0.3 --out AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01
 
 #22083917 variants loaded from .bim file.
@@ -86,7 +86,7 @@
 #AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01.prune.in and
 #AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01.prune.out
 
-6. 
+#5. Relationship check with a min PI_HAT of 0.05 yields IBD calculation 
 ./plink --bfile AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01 --extract AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01.prune.in --genome --min 0.05 --out AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01.LD0.3
 
 #22083917 variants loaded from .bim file.
@@ -103,7 +103,7 @@
 #Finished writing
 #AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01.LD0.3.genome
 
-7. 
+#6. computes observed and expected autosomal homozygous genotype counts for each sample, and reports method-of-moments F coefficient estimates 
 ./plink --bfile AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01 --het --out AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01
 
 #22083917 variants loaded from .bim file.
@@ -118,7 +118,7 @@
 #AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01.het
 
 
-8.
+#7. Extract the pruned in SNPs and remove related individuals 
 ./plink --bfile AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01 --extract AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01.prune.in --remove AFA_gtool_conversion_to_ped/afa_rels.txt --make-bed --out AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01.LD0.3.rmrels
 #FID 25700 removed. Related
 #22083917 variants loaded from .bim file.
@@ -136,7 +136,7 @@
 #AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01.LD0.3.rmrels.bim +
 #AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01.LD0.3.rmrels.fam
 
-9.
+#8.  Check heterozygosity (across all autosomal SNPs) -- look at that distribution across individuals to check for and rm outliers (F: mean +/-3 sd)
 ./plink --bfile AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01.LD0.3.rmrels --het --out AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01.LD0.3.rmrels.h.het
 
 #2550300 variants loaded from .bim file.
@@ -150,7 +150,7 @@
 #--het: 2452252 variants scanned, report written to
 #AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01.LD0.3.rmrels.h.het
 
-10.
+#9. remove outliers from het check
 ./plink --bfile AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01.LD0.3.rmrels --remove AFA_gtool_conversion_to_ped/afa.het_outlier.txt --make-bed --out AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01.LD0.3.rmrels.rmout
 
 #outlier hets removed. 3. 24906, 25490, 25038
@@ -169,7 +169,7 @@
 #AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01.LD0.3.rmrels.rmout.bim +
 #AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01.LD0.3.rmrels.rmout.fam
 
-11.
+#10. Merge population with hapmap data **can be tricky...remove problem SNPs
 ./plink --bfile AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01.LD0.3.rmrels.rmout --bmerge pedmap/hapmap_and_merge/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig --make-bed --out AFA_gtool_conversion_to_ped/afa_hap_merge
 
 #2550300 markers loaded from
@@ -189,12 +189,12 @@
 #  another tool/script, and then importing the result; PLINK is not yet suited
 #  to handling them.
 
-12. 
+#11. **best way to merge with hapmap 
 ./plink --bfile pedmap/hapmap_and_merge/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig --exclude AFA_gtool_conversion_to_ped/afa_hap_merge-merge.missnp --make-bed --out AFA_gtool_conversion_to_ped/hap1
 
 ./plink --bfile AFA_gtool_conversion_to_ped/hap1 --exclude AFA_gtool_conversion_to_ped/afa_hap_merge.missnip --make-bed --out AFA_gtool_conversion_to_ped/hap_for_merge
 
-13. 
+#12. make bed/bim/fam of population merged with hapmap pops  
 ./plink --bfile AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01.LD0.3.rmrels.rmout --bmerge AFA_gtool_conversion_to_ped/hap_for_merge --make-bed --out AFA_gtool_conversion_to_ped/afa_hap_merged
 
 #230 people loaded from
@@ -229,7 +229,7 @@
 #AFA_gtool_conversion_to_ped/afa_hap_merged.bim +
 #AFA_gtool_conversion_to_ped/afa_hap_merged.fam
 
-14. 
+#13. remove sex and other chromosomes that arent autosomal and LD prune and filter by MAF > 0.05
 ./plink --bfile AFA_gtool_conversion_to_ped/afa_hap_merged --geno 0.01 --maf 0.05 --autosome --indep-pairwise 50 5 0.3 --out AFA_gtool_conversion_to_ped/afa_hap_mergeLDpn
 
 #3462931 variants loaded from .bim file.
@@ -269,7 +269,7 @@
 #Marker lists written to AFA_gtool_conversion_to_ped/afa_hap_mergeLDpn.prune.in
 #and AFA_gtool_conversion_to_ped/afa_hap_mergeLDpn.prune.out
 
-15. 
+#14. extract pruned in SNPs from previous step Ready for smartpca
 
 ./plink --bfile AFA_gtool_conversion_to_ped/afa_hap_merged --geno 0.01 --maf 0.05 --autosome --extract AFA_gtool_conversion_to_ped/afa_hap_mergeLDpn.prune.in --recode --out AFA_gtool_conversion_to_ped/afa_hap_merged_pruned
 
@@ -289,11 +289,11 @@
 #--recode ped to AFA_gtool_conversion_to_ped/afa_hap_merged_pruned.ped +
 #AFA_gtool_conversion_to_ped/afa_hap_merged_pruned.map ... done
 
-16. 
+#15. make fam file in correct format for smartpca 
 
 awk '{print $1,$2,$3,$4,$5,1}' AFA_gtool_conversion_to_ped/afa_hap_merged.fam > AFA_gtool_conversion_to_ped/afa_hap_merged_pruned.fam
 
-17. 
+#16. command to run smartpca by EIGENSTRAT
 
 ./smartpca -p afamerge.par
 
@@ -317,7 +317,7 @@ awk '{print $1,$2,$3,$4,$5,1}' AFA_gtool_conversion_to_ped/afa_hap_merged.fam > 
 #Using 8 threads, and partial sum lookup algorithm.
 #total number of snps killed in pass: 0  used: 114088
 
-18. 
+#17. recode for afa alone (no merge with hapmap) 
 ./plink --bfile AFA_gtool_conversion_to_ped/afa_all_genexp.geno0.01.LD0.3.rmrels.rmout --recode --out AFA_gtool_conversion_to_ped/afa_pca
 
 #2550300 variants loaded from .bim file.
