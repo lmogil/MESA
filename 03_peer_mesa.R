@@ -1,8 +1,10 @@
-
+####Lauren S. Mogil###
+###run PEER factors 10-100 for all pops 
 "%&%" = function(a,b) paste(a,b,sep="")
 library(peer)
 library(tibble)
 library(dplyr)
+#loop through pops
 for(pop in c('AFA','HIS','CAU','ALL')){
 expr = read.table('/home/lauren/'%&% pop %&%'_MESA_EPI_GEX_ens.txt',header=T,check.names = F)
 expmat = t(as.matrix(expr[,-1])) #need genes in cols, ids in rows
