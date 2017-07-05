@@ -11,7 +11,7 @@ date <- Sys.Date()
 args <- commandArgs(trailingOnly=T)
 pop <- args[1]
 Nk <- args[2]
-my.dir <- '/mnt/disk2/lauren/mesa_meqtl_dosages'
+my.dir <- '/mnt/disk2/lauren/mesa_meqtl_dosages/'
 exp.dir<-'/home/lauren/new_peer_ensexp/'
 
 
