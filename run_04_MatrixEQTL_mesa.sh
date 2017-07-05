@@ -1,0 +1,15 @@
+nohup R --no-save < 04_MatrixEQTL_mesa.R --args AFA 10 
+nohup R --no-save < 04_MatrixEQTL_mesa.R --args AFA 20 
+nohup R --no-save < 04_MatrixEQTL_mesa.R --args AFA 30 
+nohup R --no-save < 04_MatrixEQTL_mesa.R --args AFA 50 
+nohup R --no-save < 04_MatrixEQTL_mesa.R --args AFA 100 
+nohup R --no-save < 04_MatrixEQTL_mesa.R --args HIS 10 
+nohup R --no-save < 04_MatrixEQTL_mesa.R --args HIS 20 
+nohup R --no-save < 04_MatrixEQTL_mesa.R --args HIS 30 
+nohup R --no-save < 04_MatrixEQTL_mesa.R --args HIS 50 
+nohup R --no-save < 04_MatrixEQTL_mesa.R --args HIS 100 
+nohup R --no-save < 04_MatrixEQTL_mesa.R --args CAU 10 
+nohup R --no-save < 04_MatrixEQTL_mesa.R --args CAU 20 
+nohup R --no-save < 04_MatrixEQTL_mesa.R --args CAU 30
+nohup R --no-save < 04_MatrixEQTL_mesa.R --args CAU 50 
+nohup R --no-save < 04_MatrixEQTL_mesa.R --args CAU 100 
