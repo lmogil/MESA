@@ -1,15 +1,15 @@
-nohup R --no-save < 04_MatrixEQTL_mesa.R --args AFA 10 
-nohup R --no-save < 04_MatrixEQTL_mesa.R --args AFA 20 
-nohup R --no-save < 04_MatrixEQTL_mesa.R --args AFA 30 
-nohup R --no-save < 04_MatrixEQTL_mesa.R --args AFA 50 
-nohup R --no-save < 04_MatrixEQTL_mesa.R --args AFA 100 
-nohup R --no-save < 04_MatrixEQTL_mesa.R --args HIS 10 
-nohup R --no-save < 04_MatrixEQTL_mesa.R --args HIS 20 
-nohup R --no-save < 04_MatrixEQTL_mesa.R --args HIS 30 
-nohup R --no-save < 04_MatrixEQTL_mesa.R --args HIS 50 
-nohup R --no-save < 04_MatrixEQTL_mesa.R --args HIS 100 
-nohup R --no-save < 04_MatrixEQTL_mesa.R --args CAU 10 
-nohup R --no-save < 04_MatrixEQTL_mesa.R --args CAU 20 
-nohup R --no-save < 04_MatrixEQTL_mesa.R --args CAU 30
-nohup R --no-save < 04_MatrixEQTL_mesa.R --args CAU 50 
-nohup R --no-save < 04_MatrixEQTL_mesa.R --args CAU 100 
+#!/bin/bash
+#PBS -N testjob
+#PBS -S /bin/bash
+#PBS -l walltime=100:00:00
+#PBS -l nodes=1:ppn=2
+#PBS -l mem=10gb
+#PBS -o logs/${PBS_JOBNAME}.o${PBS_JOBID}.log
+#PBS -e logs/${PBS_JOBNAME}.e${PBS_JOBID}.err
+cd /home/lauren/scripts
+
+Rscript 04_MatrixEQTL_mesa.R --args ALL 10 
+Rscript 04_MatrixEQTL_mesa.R --args ALL 20 
+Rscript 04_MatrixEQTL_mesa.R --args ALL 30 
+Rscript 04_MatrixEQTL_mesa.R --args ALL 50 
+Rscript 04_MatrixEQTL_mesa.R --args ALL 100 
