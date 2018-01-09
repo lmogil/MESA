@@ -1,0 +1,20 @@
+####Step-by-step guide for new predictDB pipeline v7
+*Download PredictDB_Pipeline_GTEx_v7 scripts from lmogil/elasticnet_v7
+1. create directory PredictDB_Pipeline_GTEx_v7/prepare_data/
+  -make genotype, expression, and covariate directories within prepare_data
+  -in the genotype directory 
+	  -run split_anot_file_by_chr
+      -this splits annotation file by chromosome and MAF >0.01
+	  -run split_genotype_by_chr
+      -this splits snp file by chromosome and MAF >0.01
+	  -check make sure lines are the same in snp and annotation file
+    
+2.go to PredictDB_Pipeline_GTEx_v7/model_training/scripts/
+	-put pop names in mesa_pops2.txt
+	-adjust pop_train.R according to file paths and files to be analyzed
+	-run train_models_jobs.sh
+	**make sure files are formated properly (see step 1)
+  
+3. run make_dbs.R
+
+4. combine chromosome files and make all_results files 
