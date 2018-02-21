@@ -1,0 +1,146 @@
+########new GWAS QC for mesa dbgap data (not imputed)
+$DIR = /home/lauren/MESA_dbGaP_55081/phg000071.v2.NHLBI_SHARE_MESA.genotype-calls-matrixfmt.c1/plink_qc_files/
+cd $DIR
+#1. merge two mesa data sets 
+
+#2. change affy ID to rsid...new bim file
+
+
+#3. use newly formated bim file rsids...need to liftover to hg19 from hg18 (later)
+#make sure you are in the correct directory and/or have the correct path to your files while using plink flags
+
+plink --bed MESA_all_merged.bed --bim MESA_all_merged_rsid_new.bim  --fam MESA_all_merged.fam --make-bed  --out /home/lauren/MESA_dbGaP_55081/all_mesa_merged/MESA_all_merged_1
+
+#515881 MB RAM detected; reserving 257940 MB for main workspace.
+#909622 variants loaded from .bim file.
+#7377 people (3440 males, 3937 females) loaded from .fam.
+#Using 1 thread (no multithreaded calculations invoked).
+#Before main variant filters, 5450 founders and 1927 nonfounders present.
+#Calculating allele frequencies... done.
+#Warning: 447174 het. haploid genotypes present (see
+#/home/lauren/MESA_dbGaP_55081/phg000071.v2.NHLBI_SHARE_MESA.genotype-calls-matrixfmt.c1/plink_qc_files/MESA_c1_start.hh
+#); many commands treat these as missing.
+#Warning: Nonmissing nonmale Y chromosome genotype(s) present; many commands
+#treat these as missing.
+#Total genotyping rate is 0.996968.
+#909622 variants and 7377 people pass filters and QC.
+#Note: No phenotypes present.
+
+#4. Check sex and calculate call rates for flagging poorly called SNPs and individuals
+
+plink --bfile MESA_all_merged_1 --check-sex --missing --out MESA_all_merged_1
+
+#515881 MB RAM detected; reserving 257940 MB for main workspace.
+#909622 variants loaded from .bim file.
+#7377 people (3440 males, 3937 females) loaded from .fam.
+#Using 1 thread (no multithreaded calculations invoked).
+#Before main variant filters, 5450 founders and 1927 nonfounders present.
+#Calculating allele frequencies... done.
+#Warning: 447174 het. haploid genotypes present (see MESA_c1_start.sexmiss.hh );
+#many commands treat these as missing.
+#Warning: Nonmissing nonmale Y chromosome genotype(s) present; many commands
+#treat these as missing.
+#Total genotyping rate is 0.996968.
+#--missing: Sample missing data report written to MESA_c1_start.sexmiss.imiss,
+#and variant-based missing data report written to MESA_c1_start.sexmiss.lmiss.
+#909622 variants and 7377 people pass filters and QC.
+#Note: No phenotypes present.
+#--check-sex: 36538 Xchr and 0 Ychr variant(s) scanned, 689 problems detected.
+#Report written to MESA_c1_start.sexmiss.sexcheck .
+
+#5. use autosome flag to remove all non-autosomal chromosomes
+
+plink --bfile MESA_all_merged_1 --autosome --make-bed --out MESA_all_merged_autosome
+
+
+#6. Recalculate individual call rates after removing SNPs with call rates <99%
+plink --bfile MESA_all_merged_autosome --geno 0.01 --make-bed --out MESA_all_merged_autosome.geno0.01
+
+#515881 MB RAM detected; reserving 257940 MB for main workspace.
+#909622 variants loaded from .bim file.
+#7377 people (3440 males, 3937 females) loaded from .fam.
+#Using 1 thread (no multithreaded calculations invoked).
+#Before main variant filters, 5450 founders and 1927 nonfounders present.
+#Calculating allele frequencies... done.
+#Warning: 447174 het. haploid genotypes present (see MESA_c1_start.geno0.01.hh
+#); many commands treat these as missing.
+#Warning: Nonmissing nonmale Y chromosome genotype(s) present; many commands
+#treat these as missing.
+#Total genotyping rate is 0.996968.
+#53838 variants removed due to missing genotype data (--geno).
+#855784 variants and 7377 people pass filters and QC.
+#Note: No phenotypes present.
+
+plink --bfile MESA_all_merged_autosome.geno0.01 --missing --out MESA_all_merged_autosome.geno0.01
+
+#515881 MB RAM detected; reserving 257940 MB for main workspace.
+#855784 variants loaded from .bim file.
+#7377 people (3440 males, 3937 females) loaded from .fam.
+#Using 1 thread (no multithreaded calculations invoked).
+#Before main variant filters, 5450 founders and 1927 nonfounders present.
+#Calculating allele frequencies... done.
+#Warning: 404203 het. haploid genotypes present (see MESA_c1_start.geno0.01.hh
+#); many commands treat these as missing.
+#Warning: Nonmissing nonmale Y chromosome genotype(s) present; many commands
+#treat these as missing.
+#Total genotyping rate is 0.998716.
+#--missing: Sample missing data report written to MESA_c1_start.geno0.01.imiss,
+#and variant-based missing data report written to MESA_c1_start.geno0.01.lmiss.
+
+
+
+#5. LD prune (rm 1 SNP if r2>0.3 in 50 SNP window) for relationship check and heterozygosity calculation
+plink --bfile MESA_all_merged_autosome.geno0.01 --indep-pairwise 50 5 0.3 --out MESA_all_merged_autosome.geno0.01.LD3
+
+#6. Relationship check
+plink --bfile MESA_all_merged_autosome.geno0.01 --extract MESA_all_merged_autosome.geno0.01.LD3.prune.in --genome --min 0.05 --out MESA_all_merged_autosome.geno0.01.LD3.0.05
+
+#6.1 
+####IBD analysis in R
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+"%&%" = function(a,b) paste(a,b,sep="")
+my.dir = "/home/lauren/MESA_dbGaP_55081/all_mesa_merged/"
+
+lmiss <- fread(my.dir %&% "MESA_all_merged_1.lmiss")
+hist(lmiss$F_MISS)
+##SNP count at start
+dim(lmiss)[1]
+##SNPs with call rates > 99%
+table(lmiss$F_MISS<0.01)
+
+##after removing SNPs with < 99% call rates, look at sample F_MISS (proportion of missing SNPs)
+imiss <- fread(my.dir %&% "MESA_all_merged_autosome.geno0.01.imiss")
+hist(imiss$F_MISS)
+##looks great, all individuals now have >99.4% call rates
+newlmiss <- fread(my.dir %&% "MESA_all_merged_autosome.geno0.01.lmiss")
+hist(newlmiss$F_MISS)
+##SNP and individual count after rm low-call SNPs
+dim(newlmiss)[1]
+dim(imiss)[1]
+
+ibd <- read.table(my.dir %&% "MESA_all_merged_autosome.geno0.01.LD3.0.05.genome",header=T)
+ggplot(data=ibd,aes(x=Z0,y=Z1))+geom_point(alpha=1/4)+theme_bw()
+
+##pull duplicates
+dups <- dplyr::filter(ibd,PI_HAT==1)
+dim(dups)
+
+##verify dups with matching IIDs are expected dups by checking plate layout file:
+expdups <- dplyr::filter(dups,as.character(IID1) == as.character(IID2))
+dim(expdups)
+
+##pull unexpected duplicates, IIDs (PATNOs) don't match
+unexp <- dplyr::filter(dups,as.character(IID1) != as.character(IID2))
+print(unexp)
+##forward list to Pt Study for checking
+write.table(unexp, my.dir %&% "mesa_duplicates.txt", quote=F,row.names=F)
+
+####go back to plink and remove duplicates from files
+
+#6.2 rerun --genome
+### checked for expected duplicates 
+plink --bfile MESA_all_merged_autosome.geno0.01.LD3.0.05 --extract MESA_all_merged_autosome.geno0.01.LD3.prune.in --remove mesa_duplicates.txt --genome --min 0.05 --out MESA_all_merged_autosome.geno0.01.LD3.0.05.rmdups
+
