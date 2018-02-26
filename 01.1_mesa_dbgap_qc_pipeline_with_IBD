@@ -154,6 +154,7 @@ write.table(unexp, my.dir %&% "mesa_duplicates.txt", quote=F,row.names=F)
 **make new *pop*_samples file from python script that pulls FID/IID pairs from fam file in /home/lauren/scripts/make_samples_keep.py
 
 ### location of sample files here /home/lauren/MESA_dbGaP_55081/all_mesa_merged
+# example: plink --bfile MESA_all_merged_autosome.geno0.01 --keep /home/lauren/MESA_dbGaP_55081/all_mesa_merged/afa_samples.txt --make-bed --out MESA_AFA_merged_autosome.geno0.01
 
 
 plink --bfile MESA_all_merged_autosome.geno0.01 --keep afa_samples.txt --make-bed --out MESA_AFA_merged_autosome.geno0.01
