@@ -139,8 +139,15 @@ print(unexp)
 write.table(unexp, my.dir %&% "mesa_duplicates.txt", quote=F,row.names=F)
 
 ####go back to plink and remove duplicates from files
+###if no duplicates, separate populations
 
-#6.2 rerun --genome
-### checked for expected duplicates 
-plink --bfile MESA_all_merged_autosome.geno0.01.LD3.0.05 --extract MESA_all_merged_autosome.geno0.01.LD3.prune.in --remove mesa_duplicates.txt --genome --min 0.05 --out MESA_all_merged_autosome.geno0.01.LD3.0.05.rmdups
+
+#7. Separate pops
+**make new *pop*_samples file from python script that pulls FID/IID pairs from fam file in /home/lauren/scripts/make_samples_keep.py
+
+plink --bfile MESA_all_merged_autosome.geno0.01 --keep afa_samples.txt --make-bed --out MESA_AFA_merged_autosome.geno0.01
+
+plink --bfile MESA_all_merged_autosome.geno0.01 --keep his_samples.txt --make-bed --out MESA_HIS_merged_autosome.geno0.01
+
+plink --bfile MESA_all_merged_autosome.geno0.01 --keep cau_samples.txt --make-bed --out MESA_CAU_merged_autosome.geno0.01
 
