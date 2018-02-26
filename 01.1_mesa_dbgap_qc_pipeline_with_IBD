@@ -128,7 +128,10 @@ dim(newlmiss)[1]
 dim(imiss)[1]
 
 ibd <- read.table(my.dir %&% "MESA_all_merged_autosome.geno0.01.LD3.0.05.genome",header=T)
-ggplot(data=ibd,aes(x=Z0,y=Z1))+geom_point(alpha=1/4)+theme_bw()
+
+png(filename="mesa_all_ibd.png",res=100)
+ggplot(data=ibd,aes(x=Z0,y=Z1))+geom_point(alpha=0.25)+theme_bw()
+dev.off()
 
 ##pull duplicates
 dups <- dplyr::filter(ibd,PI_HAT==1)
