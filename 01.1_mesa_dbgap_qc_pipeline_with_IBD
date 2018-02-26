@@ -141,7 +141,6 @@ write.table(unexp, my.dir %&% "mesa_duplicates.txt", quote=F,row.names=F)
 ####go back to plink and remove duplicates from files
 ###if no duplicates, separate populations
 
-
 #7. Separate pops
 **make new *pop*_samples file from python script that pulls FID/IID pairs from fam file in /home/lauren/scripts/make_samples_keep.py
 
@@ -150,4 +149,23 @@ plink --bfile MESA_all_merged_autosome.geno0.01 --keep afa_samples.txt --make-be
 plink --bfile MESA_all_merged_autosome.geno0.01 --keep his_samples.txt --make-bed --out MESA_HIS_merged_autosome.geno0.01
 
 plink --bfile MESA_all_merged_autosome.geno0.01 --keep cau_samples.txt --make-bed --out MESA_CAU_merged_autosome.geno0.01
+
+
+#8. LD prune (rm 1 SNP if r2>0.3 in 50 SNP window) for relationship check and heterozygosity calculation
+plink --bfile MESA_AFA_merged_autosome.geno0.01 --indep-pairwise 50 5 0.3 --out MESA_AFA_merged_autosome.geno0.01.LD3
+
+plink --bfile MESA_HIS_merged_autosome.geno0.01 --indep-pairwise 50 5 0.3 --out MESA_HIS_merged_autosome.geno0.01.LD3
+
+plink --bfile MESA_CAU_merged_autosome.geno0.01 --indep-pairwise 50 5 0.3 --out MESA_CAU_merged_autosome.geno0.01.LD3
+
+
+#8.Relationship check for individual pops
+plink --bfile MESA_AFA_merged_autosome.geno0.01 --extract MESA_AFA_merged_autosome.geno0.01.LD3.prune.in --genome --min 0.05 --out MESA_AFA_merged_autosome.geno0.01.LD3.0.05
+
+plink --bfile MESA_HIS_merged_autosome.geno0.01 --extract MESA_HIS_merged_autosome.geno0.01.LD3.prune.in --genome --min 0.05 --out MESA_HIS_merged_autosome.geno0.01.LD3.0.05
+
+plink --bfile MESA_CAU_merged_autosome.geno0.01 --extract MESA_CAU_merged_autosome.geno0.01.LD3.prune.in --genome --min 0.05 --out MESA_CAU_merged_autosome.geno0.01.LD3.0.05
+
+#####repeat step 6.1 with individual pops
+
 
