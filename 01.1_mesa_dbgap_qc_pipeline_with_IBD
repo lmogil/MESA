@@ -212,6 +212,15 @@ plink --bfile MESA_HIS_merged_autosome.geno0.01.sd --extract MESA_HIS_merged_aut
 
 plink --bfile MESA_CAU_merged_autosome.geno0.01.sd --extract MESA_CAU_merged_autosome.geno0.01.sd.prune.prune.in --out MESA_CAU_merged_autosome.geno0.01.sd.4pca --make-bed
 
+#13. Merge pruned data with HAPMAP
+plink --bfile MESA_AFA_merged_autosome.geno0.01.sd.4pca --bmerge HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig --make-bed --out MESA_AFA_mergedHAPMAP
+
+plink --bfile MESA_HIS_merged_autosome.geno0.01.sd.4pca --bmerge HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig --make-bed --out MESA_HIS_mergedHAPMAP
+
+plink --bfile MESA_CAU_merged_autosome.geno0.01.sd.4pca --bmerge HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig --make-bed --out MESA_CAU_mergedHAPMAP
+
+**May need to remove "problem" SNPs and then re-merge
+
 #14. reformat fam file for PCA
 awk '{print $1, $2, $3, $4, $5, 1}' MESA_AFA_merged_autosome.geno0.01.sd.4pca.fam > MESA_AFA_merged_autosome.geno0.01.sd.4pca.fam
 
