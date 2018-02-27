@@ -173,7 +173,7 @@ plink --bfile MESA_CAU_merged_autosome.geno0.01 --indep-pairwise 50 5 0.3 --out 
 
 
 #9.Relationship check for individual pops
-plink --bfile MESA_AFA_merged_autosome.geno0.01 --extract MESA_AFA_merged_autosome.geno0.01.LD3.prune.in --genome --min 0.05 --out MESA_AFA_merged_autosome.geno0.01.LD3.0.05
+plink --bfile MESA_AFA_merged_autosome.geno0.01 --extract MESA_AFA_merged_autosome.geno0.01.LD3.prune.in --genome --min 0.125 --out MESA_AFA_merged_autosome.geno0.01.LD3.0.125
 
 plink --bfile MESA_HIS_merged_autosome.geno0.01 --extract MESA_HIS_merged_autosome.geno0.01.LD3.prune.in --genome --min 0.05 --out MESA_HIS_merged_autosome.geno0.01.LD3.0.05
 
