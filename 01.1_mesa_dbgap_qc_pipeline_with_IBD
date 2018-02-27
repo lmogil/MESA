@@ -172,7 +172,7 @@ plink --bfile MESA_HIS_merged_autosome.geno0.01 --indep-pairwise 50 5 0.3 --out 
 plink --bfile MESA_CAU_merged_autosome.geno0.01 --indep-pairwise 50 5 0.3 --out MESA_CAU_merged_autosome.geno0.01.LD3
 
 
-#8.Relationship check for individual pops
+#9.Relationship check for individual pops
 plink --bfile MESA_AFA_merged_autosome.geno0.01 --extract MESA_AFA_merged_autosome.geno0.01.LD3.prune.in --genome --min 0.05 --out MESA_AFA_merged_autosome.geno0.01.LD3.0.05
 
 plink --bfile MESA_HIS_merged_autosome.geno0.01 --extract MESA_HIS_merged_autosome.geno0.01.LD3.prune.in --genome --min 0.05 --out MESA_HIS_merged_autosome.geno0.01.LD3.0.05
@@ -180,5 +180,60 @@ plink --bfile MESA_HIS_merged_autosome.geno0.01 --extract MESA_HIS_merged_autoso
 plink --bfile MESA_CAU_merged_autosome.geno0.01 --extract MESA_CAU_merged_autosome.geno0.01.LD3.prune.in --genome --min 0.05 --out MESA_CAU_merged_autosome.geno0.01.LD3.0.05
 
 #####repeat step 6.1 with individual pops
+
+#10.Check heterozygosity (across all autosomal SNPs) -- look at that distribution across individuals to check for and rm outliers (F: mean +/-3 sd)
+plink --bfile MESA_AFA_merged_autosome.geno0.01 --het --out MESA_AFA_merged_autosome.geno0.01
+
+plink --bfile MESA_HIS_merged_autosome.geno0.01 --het --out MESA_HIS_merged_autosome.geno0.01
+
+plink --bfile MESA_CAU_merged_autosome.geno0.01 --het --out MESA_CAU_merged_autosome.geno0.01
+
+#10.1 make outlier file in R
+
+#11. made outliers outside of -/+ 3 SD 
+plink --bfile MESA_AFA_merged_autosome.geno0.01 --remove afa_3sd.txt --make-bed --out MESA_AFA_merged_autosome.geno0.01.sd
+
+plink --bfile MESA_HIS_merged_autosome.geno0.01 --remove his_3sd.txt --make-bed --out MESA_HIS_merged_autosome.geno0.01.sd
+
+plink --bfile MESA_CAU_merged_autosome.geno0.01 --remove cau_3sd.txt --make-bed --out MESA_CAU_merged_autosome.geno0.01.sd
+
+
+#12. LD prune MESA files with removed individuals
+plink --bfile MESA_AFA_merged_autosome.geno0.01.sd --indep-pairwise 50 5 0.3 --out MESA_AFA_merged_autosome.geno0.01.sd.prune
+
+plink --bfile MESA_HIS_merged_autosome.geno0.01.sd --indep-pairwise 50 5 0.3 --out MESA_HIS_merged_autosome.geno0.01.sd.prune
+
+plink --bfile MESA_CAU_merged_autosome.geno0.01.sd --indep-pairwise 50 5 0.3 --out MESA_CAU_merged_autosome.geno0.01.sd.prune
+
+#13. Make bed files after LD pruning and extracting relatives...to use with PCA
+plink --bfile MESA_AFA_merged_autosome.geno0.01.sd --extract MESA_AFA_merged_autosome.geno0.01.sd.prune.prune.in --out MESA_AFA_merged_autosome.geno0.01.sd.4pca --make-bed
+
+plink --bfile MESA_HIS_merged_autosome.geno0.01.sd --extract MESA_HIS_merged_autosome.geno0.01.sd.prune.prune.in --out MESA_HIS_merged_autosome.geno0.01.sd.4pca --make-bed
+
+plink --bfile MESA_CAU_merged_autosome.geno0.01.sd --extract MESA_CAU_merged_autosome.geno0.01.sd.prune.prune.in --out MESA_CAU_merged_autosome.geno0.01.sd.4pca --make-bed
+
+#14. reformat fam file for PCA
+awk '{print $1, $2, $3, $4, $5, 1}' MESA_AFA_merged_autosome.geno0.01.sd.4pca.fam > MESA_AFA_merged_autosome.geno0.01.sd.4pca.fam
+
+awk '{print $1, $2, $3, $4, $5, 1}' MESA_HIS_merged_autosome.geno0.01.sd.4pca.fam > MESA_HIS_merged_autosome.geno0.01.sd.4pca.fam
+
+awk '{print $1, $2, $3, $4, $5, 1}' MESA_CAU_merged_autosome.geno0.01.sd.4pca.fam > MESA_CAU_merged_autosome.geno0.01.sd.4pca.fam
+
+#15. Make ped/map files for PCA
+plink --bfile MESA_AFA_merged_autosome.geno0.01.sd.4pca --recode --out MESA_AFA_merged_autosome.geno0.01.sd.4pca
+
+plink --bfile MESA_HIS_merged_autosome.geno0.01.sd.4pca --recode --out MESA_HIS_merged_autosome.geno0.01.sd.4pca
+
+plink --bfile MESA_CAU_merged_autosome.geno0.01.sd.4pca --recode --out MESA_CAU_merged_autosome.geno0.01.sd.4pca
+
+#16. make .par file for PCA
+
+#17. run PCA
+smartpca -p AFA.par
+
+smartpca -p HIS.par
+
+smartpca -p CAU.par
+
 
 
