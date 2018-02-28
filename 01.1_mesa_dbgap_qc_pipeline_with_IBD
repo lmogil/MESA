@@ -211,11 +211,11 @@ dim(hetoutliers)
 write.table(hetoutliers_afa,file=my.dir %&% "afa_3sd.txt",quote=F,col.names=F,row.names=F)
 
 #11. made outliers outside of -/+ 3 SD 
-plink --bfile MESA_AFA_merged_autosome.geno0.01 --remove afa_3sd.txt --make-bed --out MESA_AFA_merged_autosome.geno0.01.sd
+plink --bfile MESA_AFA_merged_autosome.geno0.01 --remove afa_rels_3sd.txt --make-bed --out MESA_AFA_merged_autosome.geno0.01.sd
 
-plink --bfile MESA_HIS_merged_autosome.geno0.01 --remove his_3sd.txt --make-bed --out MESA_HIS_merged_autosome.geno0.01.sd
+plink --bfile MESA_HIS_merged_autosome.geno0.01 --remove his_rels_3sd.txt --make-bed --out MESA_HIS_merged_autosome.geno0.01.sd
 
-plink --bfile MESA_CAU_merged_autosome.geno0.01 --remove cau_3sd.txt --make-bed --out MESA_CAU_merged_autosome.geno0.01.sd
+plink --bfile MESA_CAU_merged_autosome.geno0.01 --remove cau_rels_3sd.txt --make-bed --out MESA_CAU_merged_autosome.geno0.01.sd
 
 
 #12. liftover steps---change from genome build hg18 to hg19
@@ -233,24 +233,24 @@ cut -f 4 AFA_lifted.bed.unlifted | sed "/^#/d" >> afa_to_exclude.txt
 
 plink --file MESA_AFA_4lift --exclude afa_to_exclude.txt --recode --out AFA_tolift
 
-python /home/lauren/MESA_dbGaP_55081/all_mesa_merged/liftover/liftOverPlink.py -map AFA_tolift.map --out AFA_lifted_use --chain hg18ToHg19.over.chain.gz
+python /home/lauren/MESA_dbGaP_55081/all_mesa_merged/liftover/liftOverPlink.py --map AFA_tolift.map --out AFA_lifted_use --chain /home/lauren/MESA_dbGaP_55081/all_mesa_merged/liftover/hg18ToHg19.over.chain.gz
 
-plink --ped AFA_tolift --map AFA_lifted_use.map --recode --out MESA_AFA_lifted_final
+plink --ped AFA_tolift.ped --map AFA_lifted_use.map --make-bed --out MESA_AFA_lifted_final
 
 #13. LD prune MESA files with removed individuals
-plink --bfile MESA_AFA_lifted --indep-pairwise 50 5 0.3 --out MESA_AFA_merged_autosome.geno0.01.sd.prune
+plink --bfile MESA_AFA_lifted_final --indep-pairwise 50 5 0.3 --out MESA_AFA_merged_autosome.geno0.01.sd.prune
 
-plink --bfile MESA_HIS_lifted --indep-pairwise 50 5 0.3 --out MESA_HIS_merged_autosome.geno0.01.sd.prune
+plink --bfile MESA_HIS_lifted_final --indep-pairwise 50 5 0.3 --out MESA_HIS_merged_autosome.geno0.01.sd.prune
 
-plink --bfile MESA_CAU_lifted --indep-pairwise 50 5 0.3 --out MESA_CAU_merged_autosome.geno0.01.sd.prune
+plink --bfile MESA_CAU_lifted_final --indep-pairwise 50 5 0.3 --out MESA_CAU_merged_autosome.geno0.01.sd.prune
 
 
 #14. Make bed files after LD pruning and extracting relatives...to use with PCA
 plink --bfile MESA_AFA_lifted --extract MESA_AFA_merged_autosome.geno0.01.sd.prune.prune.in --out MESA_AFA_merged_autosome.geno0.01.sd.4pca --make-bed
 
-plink --bfile MESA_HIS_lifted --extract MESA_HIS_merged_autosome.geno0.01.sd.prune.prune.in --out MESA_HIS_merged_autosome.geno0.01.sd.4pca --make-bed
+plink --bfile MESA_HIS_lifted_final --extract MESA_HIS_merged_autosome.geno0.01.sd.prune.prune.in --out MESA_HIS_merged_autosome.geno0.01.sd.4pca --make-bed
 
-plink --bfile MESA_CAU_lifted --extract MESA_CAU_merged_autosome.geno0.01.sd.prune.prune.in --out MESA_CAU_merged_autosome.geno0.01.sd.4pca --make-bed
+plink --bfile MESA_CAU_lifted_final --extract MESA_CAU_merged_autosome.geno0.01.sd.prune.prune.in --out MESA_CAU_merged_autosome.geno0.01.sd.4pca --make-bed
 
 
 
@@ -270,7 +270,21 @@ plink --bfile MESA_AFA_4hapmerge --bmerge /home/lauren/MESA_dbGaP_55081/all_mesa
 
 plink --bfile MESA_HIS_merged_autosome.geno0.01.sd.4pca --bmerge /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig --make-bed --out MESA_HIS_mergedHAPMAP
 
+plink --bfile MESA_HIS_merged_autosome.geno0.01.sd.4pca --exclude MESA_HIS_mergedHAPMAP-merge.missnp --make-bed --out MESA_HIS_4hapmerge
+
+**try merging again
+plink --bfile MESA_HIS_4hapmerge --bmerge /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig --make-bed --out MESA_HIS_mergedHAPMAP
+
+**success!!!
+
 plink --bfile MESA_CAU_merged_autosome.geno0.01.sd.4pca --bmerge /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig --make-bed --out MESA_CAU_mergedHAPMAP
+
+plink --bfile MESA_CAU_merged_autosome.geno0.01.sd.4pca --exclude MESA_CAU_mergedHAPMAP-merge.missnp --make-bed --out MESA_CAU_4hapmerge
+
+**try merging again
+plink --bfile MESA_CAU_4hapmerge --bmerge /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig --make-bed --out MESA_CAU_mergedHAPMAP
+
+**success!!!
 
 
 #16. reformat fam file for PCA
