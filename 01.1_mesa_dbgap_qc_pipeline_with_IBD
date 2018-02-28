@@ -255,11 +255,11 @@ plink --bfile MESA_AFA_lifted --extract MESA_CAU_merged_autosome.geno0.01.sd.pru
 
 
 #15. Merge pruned data with HAPMAP
-plink --bfile MESA_AFA_use_4pca --bmerge /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig --make-bed --out MESA_AFA_mergedHAPMAP
+plink --bfile MESA_AFA_merged_autosome.geno0.01.sd.4pca --bmerge /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig --make-bed --out MESA_AFA_mergedHAPMAP
 
-plink --bfile MESA_HIS_use_4pca --bmerge /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig --make-bed --out MESA_HIS_mergedHAPMAP
+plink --bfile MESA_HIS_merged_autosome.geno0.01.sd.4pca --bmerge /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig --make-bed --out MESA_HIS_mergedHAPMAP
 
-plink --bfile MESA_CAU_use_4pca --bmerge /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig --make-bed --out MESA_CAU_mergedHAPMAP
+plink --bfile MESA_CAU_merged_autosome.geno0.01.sd.4pca --bmerge /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig --make-bed --out MESA_CAU_mergedHAPMAP
 
 
 #16. reformat fam file for PCA
