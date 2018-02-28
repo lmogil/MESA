@@ -173,7 +173,7 @@ plink --bfile MESA_CAU_merged_autosome.geno0.01 --indep-pairwise 50 5 0.3 --out 
 
 
 #9.Relationship check for individual pops
-plink --bfile MESA_AFA_merged_autosome.geno0.01 --extract MESA_AFA_merged_autosome.geno0.01.LD3.prune.in --genome --min 0.125 --out MESA_AFA_merged_autosome.geno0.01.LD3.0.125
+plink --bfile MESA_AFA_merged_autosome.geno0.01 --extract MESA_AFA_merged_autosome.geno0.01.LD3.prune.in --genome --min 0.05 --out MESA_AFA_merged_autosome.geno0.01.LD3.0.125
 
 plink --bfile MESA_HIS_merged_autosome.geno0.01 --extract MESA_HIS_merged_autosome.geno0.01.LD3.prune.in --genome --min 0.05 --out MESA_HIS_merged_autosome.geno0.01.LD3.0.05
 
@@ -188,7 +188,27 @@ plink --bfile MESA_HIS_merged_autosome.geno0.01 --het --out MESA_HIS_merged_auto
 
 plink --bfile MESA_CAU_merged_autosome.geno0.01 --het --out MESA_CAU_merged_autosome.geno0.01
 
-#10.1 make outlier file in R
+#10.1 make outlier file in R---do this for each pop---AFA example here
+afa_het<-read.table(my.dir %&% "MESA_AFA_merged_autosome.geno0.01.het", header = T)
+
+hist(afa_het$F,50)
+summary(afa_het$F)
+
+sortHET_afa<-afa_het[order(afa_het$F),]
+
+outliers_afa<-data.frame()
+
+for(i in 1:length(sortHET_afa$F)){
+	if(sortHET_afa[i,6] > (mean(sortHET_afa$F)+3*sd(sortHET_afa$F))){
+		outliers <- rbind(outliers,sortHET_afa[i,])
+	}
+	if(sortHET_afa[i,6] < (mean(sortHET_afa$F)-3*sd(sortHET_afa$F))){
+		outliers <- rbind(outliers,sortHET_afa[i,])
+	}
+}
+hetoutliers_afa <- select(outliers_afa,FID,IID)
+dim(hetoutliers)
+write.table(hetoutliers_afa,file=my.dir %&% "afa_3sd.txt",quote=F,col.names=F,row.names=F)
 
 #11. made outliers outside of -/+ 3 SD 
 plink --bfile MESA_AFA_merged_autosome.geno0.01 --remove afa_3sd.txt --make-bed --out MESA_AFA_merged_autosome.geno0.01.sd
@@ -212,7 +232,7 @@ plink --bfile MESA_HIS_merged_autosome.geno0.01.sd --extract MESA_HIS_merged_aut
 
 plink --bfile MESA_CAU_merged_autosome.geno0.01.sd --extract MESA_CAU_merged_autosome.geno0.01.sd.prune.prune.in --out MESA_CAU_merged_autosome.geno0.01.sd.4pca --make-bed
 
-#13. Merge pruned data with HAPMAP
+#14. Merge pruned data with HAPMAP
 plink --bfile MESA_AFA_merged_autosome.geno0.01.sd.4pca --bmerge /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg18/HM3_ASN_CEU_YRI_Unrelated_hg18_noAmbig --make-bed --out MESA_AFA_mergedHAPMAP
 
 plink --bfile MESA_HIS_merged_autosome.geno0.01.sd.4pca --bmerge /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg18/HM3_ASN_CEU_YRI_Unrelated_hg18_noAmbig --make-bed --out MESA_HIS_mergedHAPMAP
@@ -221,14 +241,14 @@ plink --bfile MESA_CAU_merged_autosome.geno0.01.sd.4pca --bmerge /home/lauren/ME
 
 **May need to remove "problem" SNPs and then re-merge
 
-#14. reformat fam file for PCA
+#15. reformat fam file for PCA
 awk '{print $1, $2, $3, $4, $5, 1}' MESA_AFA_merged_autosome.geno0.01.sd.4pca.fam > MESA_AFA_merged_autosome.geno0.01.sd.4pca.fam
 
 awk '{print $1, $2, $3, $4, $5, 1}' MESA_HIS_merged_autosome.geno0.01.sd.4pca.fam > MESA_HIS_merged_autosome.geno0.01.sd.4pca.fam
 
 awk '{print $1, $2, $3, $4, $5, 1}' MESA_CAU_merged_autosome.geno0.01.sd.4pca.fam > MESA_CAU_merged_autosome.geno0.01.sd.4pca.fam
 
-#15. Make ped/map files for PCA
+#16. Make ped/map files for PCA
 plink --bfile MESA_AFA_merged_autosome.geno0.01.sd.4pca --recode --out MESA_AFA_merged_autosome.geno0.01.sd.4pca
 
 plink --bfile MESA_HIS_merged_autosome.geno0.01.sd.4pca --recode --out MESA_HIS_merged_autosome.geno0.01.sd.4pca
