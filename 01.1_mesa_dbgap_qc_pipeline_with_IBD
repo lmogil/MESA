@@ -232,37 +232,84 @@ plink --bfile MESA_HIS_merged_autosome.geno0.01.sd --extract MESA_HIS_merged_aut
 
 plink --bfile MESA_CAU_merged_autosome.geno0.01.sd --extract MESA_CAU_merged_autosome.geno0.01.sd.prune.prune.in --out MESA_CAU_merged_autosome.geno0.01.sd.4pca --make-bed
 
-#14. Merge pruned data with HAPMAP
-plink --bfile MESA_AFA_merged_autosome.geno0.01.sd.4pca --bmerge /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg18/HM3_ASN_CEU_YRI_Unrelated_hg18_noAmbig --make-bed --out MESA_AFA_mergedHAPMAP
-
-plink --bfile MESA_HIS_merged_autosome.geno0.01.sd.4pca --bmerge /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg18/HM3_ASN_CEU_YRI_Unrelated_hg18_noAmbig --make-bed --out MESA_HIS_mergedHAPMAP
-
-plink --bfile MESA_CAU_merged_autosome.geno0.01.sd.4pca --bmerge /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg18/HM3_ASN_CEU_YRI_Unrelated_hg18_noAmbig --make-bed --out MESA_CAU_mergedHAPMAP
-
 **May need to remove "problem" SNPs and then re-merge
+#14. liftover steps---change from genome build hg18 to hg19
+#make ped/map files of pop plink files
+plink --bfile MESA_AFA_merged_autosome.geno0.01 --recode --out MESA_AFA_4lift
 
-#15. reformat fam file for PCA
-awk '{print $1, $2, $3, $4, $5, 1}' MESA_AFA_merged_autosome.geno0.01.sd.4pca.fam > MESA_AFA_merged_autosome.geno0.01.sd.4pca.fam
+plink --bfile MESA_HIS_merged_autosome.geno0.01 --recode --out MESA_HIS_4lift
 
-awk '{print $1, $2, $3, $4, $5, 1}' MESA_HIS_merged_autosome.geno0.01.sd.4pca.fam > MESA_HIS_merged_autosome.geno0.01.sd.4pca.fam
+plink --bfile MESA_CAU_merged_autosome.geno0.01 --recode --out MESA_CAU_4lift
 
-awk '{print $1, $2, $3, $4, $5, 1}' MESA_CAU_merged_autosome.geno0.01.sd.4pca.fam > MESA_CAU_merged_autosome.geno0.01.sd.4pca.fam
+#run liftover script with new ped/mapfiles --example with AFA
+python /home/lauren/MESA_dbGaP_55081/all_mesa_merged/liftover/liftOverPlink.py -map MESA_AFA_4lift.map --out AFA_lifted --chain hg18ToHg19.over.chain.gz
 
-#16. Make ped/map files for PCA
-plink --bfile MESA_AFA_merged_autosome.geno0.01.sd.4pca --recode --out MESA_AFA_merged_autosome.geno0.01.sd.4pca
+cut -f 4 AFA_lifted.bed.unlifted | sed "/^#/d" >> afa_to_exclude.txt
 
-plink --bfile MESA_HIS_merged_autosome.geno0.01.sd.4pca --recode --out MESA_HIS_merged_autosome.geno0.01.sd.4pca
+plink --file MESA_AFA_4lift --exclude afa_to_exclude.txt --recode --out AFA_tolift
 
-plink --bfile MESA_CAU_merged_autosome.geno0.01.sd.4pca --recode --out MESA_CAU_merged_autosome.geno0.01.sd.4pca
+python /home/lauren/MESA_dbGaP_55081/all_mesa_merged/liftover/liftOverPlink.py -map AFA_tolift.map --out AFA_lifted_use --chain hg18ToHg19.over.chain.gz
 
-#16. make .par file for PCA
+plink --ped AFA_tolift --map AFA_lifted_use.map --recode --out MESA_AFA_lifted_final
 
-#17. run PCA
+##
+
+
+#make new bed/bim/fam files 
+plink --file MESA_AFA_lifted --make-bed --out MESA_AFA_use_4pca
+
+plink --file MESA_HIS_lifted --make-bed --out MESA_HIS_use_4pca
+
+plink --file MESA_CAU_lifted --make-bed --out MESA_CAU_use_4pca
+
+#15. Merge pruned data with HAPMAP
+plink --bfile MESA_AFA_use_4pca --bmerge /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig --make-bed --out MESA_AFA_mergedHAPMAP
+
+plink --bfile MESA_HIS_use_4pca --bmerge /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig --make-bed --out MESA_HIS_mergedHAPMAP
+
+plink --bfile MESA_CAU_use_4pca --bmerge /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig --make-bed --out MESA_CAU_mergedHAPMAP
+
+
+#16. reformat fam file for PCA
+##unmerged
+awk '{print $1, $2, $3, $4, $5, 1}' MESA_AFA_use_4pca.fam > MESA_AFA_merged_autosome.geno0.01.sd.4pca.fam
+
+awk '{print $1, $2, $3, $4, $5, 1}' MESA_HIS_use_4pca.fam > MESA_HIS_merged_autosome.geno0.01.sd.4pca.fam
+
+awk '{print $1, $2, $3, $4, $5, 1}' MESA_CAU_use_4pca.fam > MESA_CAU_merged_autosome.geno0.01.sd.4pca.fam
+
+###merged with hapmap
+awk '{print $1, $2, $3, $4, $5, 1}' MESA_AFA_mergedHAPMA.fam > MESA_AFA_merged_hapmap.4pca.fam
+
+awk '{print $1, $2, $3, $4, $5, 1}' MESA_HIS_mergedHAPMAP.fam > MESA_HIS_merged_hapmap.4pca.fam
+
+awk '{print $1, $2, $3, $4, $5, 1}' MESA_CAU_mergedHAPMAP.fam > MESA_CAU_merged_hapmap.4pca.fam
+
+#17. Make ped/map files for PCA
+##unmerged
+plink --bfile MESA_AFA_use_4pca --recode --out MESA_AFA_merged_autosome.geno0.01.sd.4pca
+
+plink --bfile MESA_HIS_use_4pca --recode --out MESA_HIS_merged_autosome.geno0.01.sd.4pca
+
+plink --bfile MESA_CAU_use_4pca --recode --out MESA_CAU_merged_autosome.geno0.01.sd.4pca
+
+###merged with hapmap hg19
+plink --bfile MESA_AFA_mergedHAPMAP --recode --out MESA_AFA_merged_hapmap.4pca
+
+plink --bfile MESA_HIS_mergedHAPMAP --recode --out MESA_HIS_merged_hapmap.4pca
+
+plink --bfile MESA_CAU_mergedHAPMAP --recode --out MESA_CAU_merged_hapmap.4pca
+
+
+#18. make .par file for PCA
+
+#19. run PCA
 smartpca -p AFA.par
 
 smartpca -p HIS.par
 
 smartpca -p CAU.par
+
 
 
 
