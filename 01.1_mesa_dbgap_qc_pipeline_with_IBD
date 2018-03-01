@@ -352,6 +352,11 @@ smartpca -p his_hapmap.par
 smartpca -p cau_autosome.par
 smartpca -p cau_hapmap.par
 
+
+####19.1
+#Use R to plot PCs with and without merging with HapMap
+
+
 #20.calculate allele freq. 
 plink --bfile  MESA_AFA_lifted --freq --out  MESA_AFA_lifted_final_freq
 
@@ -366,3 +371,41 @@ perl HRC-1000G-check-bim.pl -b MESA_HIS_lifted_final.bim -f MESA_HIS_lifted_fina
 
 perl HRC-1000G-check-bim.pl -b MESA_CAU_lifted_final.bim -f MESA_CAU_lifted_final_freq.frq -r 000GP_Phase3_combined.legend -g
 
+#22. use generated files from #21 to format for imputation
+plink --bfile MESA_AFA_lifted --exclude Exclude-MESA_AFA_lifted-1000G.txt --make-bed --out TEMP1
+plink --bfile TEMP1 --update-map Chromosome-MESA_AFA_lifted-1000G.txt --update-chr --make-bed --out TEMP2
+plink --bfile TEMP2 --update-map Position-MESA_AFA_lifted-1000G.txt --make-bed --out TEMP3
+plink --bfile TEMP3 --flip Strand-Flip-MESA_AFA_lifted-1000G.txt --make-bed --out TEMP4
+plink --bfile TEMP4 --reference-allele Force-Allele1-MESA_AFA_lifted-1000G.txt --make-bed --out MESA_AFA_lifted_final-updated
+
+##make a Run_plink_makevcf.sh file that contains these lines ans run
+plink --bfile MESA_AFA_lifted_final-updated --reference-allele Force-Allele1-MESA_AFA_lifted-1000G.txt --recode vcf --chr 1 --out MESA_AFA_lifted_final_imputationchr1
+plink --bfile MESA_AFA_lifted_final-updated --reference-allele Force-Allele1-MESA_AFA_lifted-1000G.txt --recode vcf --chr 2 --out MESA_AFA_lifted_final_imputationchr2
+plink --bfile MESA_AFA_lifted_final-updated --reference-allele Force-Allele1-MESA_AFA_lifted-1000G.txt --recode vcf --chr 3 --out MESA_AFA_lifted_final_imputationchr3
+plink --bfile MESA_AFA_lifted_final-updated --reference-allele Force-Allele1-MESA_AFA_lifted-1000G.txt --recode vcf --chr 4 --out MESA_AFA_lifted_final_imputationchr4
+plink --bfile MESA_AFA_lifted_final-updated --reference-allele Force-Allele1-MESA_AFA_lifted-1000G.txt --recode vcf --chr 5 --out MESA_AFA_lifted_final_imputationchr5
+plink --bfile MESA_AFA_lifted_final-updated --reference-allele Force-Allele1-MESA_AFA_lifted-1000G.txt --recode vcf --chr 6 --out MESA_AFA_lifted_final_imputationchr6
+plink --bfile MESA_AFA_lifted_final-updated --reference-allele Force-Allele1-MESA_AFA_lifted-1000G.txt --recode vcf --chr 7 --out MESA_AFA_lifted_final_imputationchr7
+plink --bfile MESA_AFA_lifted_final-updated --reference-allele Force-Allele1-MESA_AFA_lifted-1000G.txt --recode vcf --chr 8 --out MESA_AFA_lifted_final_imputationchr8
+plink --bfile MESA_AFA_lifted_final-updated --reference-allele Force-Allele1-MESA_AFA_lifted-1000G.txt --recode vcf --chr 9 --out MESA_AFA_lifted_final_imputationchr9
+plink --bfile MESA_AFA_lifted_final-updated --reference-allele Force-Allele1-MESA_AFA_lifted-1000G.txt --recode vcf --chr 10 --out MESA_AFA_lifted_final_imputationchr10
+plink --bfile MESA_AFA_lifted_final-updated --reference-allele Force-Allele1-MESA_AFA_lifted-1000G.txt --recode vcf --chr 11 --out MESA_AFA_lifted_final_imputationchr11
+plink --bfile MESA_AFA_lifted_final-updated --reference-allele Force-Allele1-MESA_AFA_lifted-1000G.txt --recode vcf --chr 12 --out MESA_AFA_lifted_final_imputationchr12
+plink --bfile MESA_AFA_lifted_final-updated --reference-allele Force-Allele1-MESA_AFA_lifted-1000G.txt --recode vcf --chr 13 --out MESA_AFA_lifted_final_imputationchr13
+plink --bfile MESA_AFA_lifted_final-updated --reference-allele Force-Allele1-MESA_AFA_lifted-1000G.txt --recode vcf --chr 14 --out MESA_AFA_lifted_final_imputationchr14
+plink --bfile MESA_AFA_lifted_final-updated --reference-allele Force-Allele1-MESA_AFA_lifted-1000G.txt --recode vcf --chr 15 --out MESA_AFA_lifted_final_imputationchr15
+plink --bfile MESA_AFA_lifted_final-updated --reference-allele Force-Allele1-MESA_AFA_lifted-1000G.txt --recode vcf --chr 16 --out MESA_AFA_lifted_final_imputationchr16
+plink --bfile MESA_AFA_lifted_final-updated --reference-allele Force-Allele1-MESA_AFA_lifted-1000G.txt --recode vcf --chr 17 --out MESA_AFA_lifted_final_imputationchr17
+plink --bfile MESA_AFA_lifted_final-updated --reference-allele Force-Allele1-MESA_AFA_lifted-1000G.txt --recode vcf --chr 18 --out MESA_AFA_lifted_final_imputationchr18
+plink --bfile MESA_AFA_lifted_final-updated --reference-allele Force-Allele1-MESA_AFA_lifted-1000G.txt --recode vcf --chr 19 --out MESA_AFA_lifted_final_imputationchr19
+plink --bfile MESA_AFA_lifted_final-updated --reference-allele Force-Allele1-MESA_AFA_lifted-1000G.txt --recode vcf --chr 20 --out MESA_AFA_lifted_final_imputationchr20
+plink --bfile MESA_AFA_lifted_final-updated --reference-allele Force-Allele1-MESA_AFA_lifted-1000G.txt --recode vcf --chr 21 --out MESA_AFA_lifted_final_imputationchr21
+plink --bfile MESA_AFA_lifted_final-updated --reference-allele Force-Allele1-MESA_AFA_lifted-1000G.txt --recode vcf --chr 22 --out MESA_AFA_lifted_final_imputationchr22
+
+#23. sort and out put for each chromosome
+for i in {1..22}; do vcf-sort MESA_AFA_lifted_final_imputationchr${i}.vcf | bgzip -c > MESA_AFA_lifted_final_imputation_chr${i}.vcf.gz; done
+
+#24. submit for imputation
+-started with 672602 for AFA
+
+ 
