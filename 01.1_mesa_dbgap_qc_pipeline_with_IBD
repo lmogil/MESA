@@ -246,7 +246,7 @@ plink --bfile MESA_CAU_lifted_final --indep-pairwise 50 5 0.3 --out MESA_CAU_mer
 
 
 #14. Make bed files after LD pruning and extracting relatives...to use with PCA
-plink --bfile MESA_AFA_lifted --extract MESA_AFA_merged_autosome.geno0.01.sd.prune.prune.in --out MESA_AFA_merged_autosome.geno0.01.sd.4pca --make-bed
+plink --bfile MESA_AFA_lifted_final --extract MESA_AFA_merged_autosome.geno0.01.sd.prune.prune.in --out MESA_AFA_merged_autosome.geno0.01.sd.4pca --make-bed
 
 plink --bfile MESA_HIS_lifted_final --extract MESA_HIS_merged_autosome.geno0.01.sd.prune.prune.in --out MESA_HIS_merged_autosome.geno0.01.sd.4pca --make-bed
 
@@ -352,5 +352,17 @@ smartpca -p his_hapmap.par
 smartpca -p cau_autosome.par
 smartpca -p cau_hapmap.par
 
+#20.calculate allele freq. 
+plink --bfile  MESA_AFA_lifted --freq --out  MESA_AFA_lifted_final_freq
 
+plink --bfile  MESA_HIS_lifted_final --freq --out  MESA_HIS_lifted_final_freq
+
+plink --bfile  MESA_CAU_lifted_final --freq --out  MESA_CAU_lifted_final_freq
+
+#21. run perl file that checks samples against 1000g
+perl HRC-1000G-check-bim.pl -b MESA_AFA_lifted.bim -f MESA_AFA_lifted_final_freq.frq -r 1000GP_Phase3_combined.legend -g
+
+perl HRC-1000G-check-bim.pl -b MESA_HIS_lifted_final.bim -f MESA_HIS_lifted_final_freq.frq -r 1000GP_Phase3_combined.legend -g
+
+perl HRC-1000G-check-bim.pl -b MESA_CAU_lifted_final.bim -f MESA_CAU_lifted_final_freq.frq -r 000GP_Phase3_combined.legend -g
 
