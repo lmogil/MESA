@@ -251,37 +251,37 @@ plink --bfile MESA_CAU_lifted_filt --indep-pairwise 50 5 0.3 --recode --out MESA
 
 
 #15. Merge pruned data with HAPMAP
-plink --bfile MESA_AFA_merged_autosome.geno0.01.sd.4pca --bmerge /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig.bed  /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig.bim /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig.fam --make-bed --out MESA_AFA_mergedHAPMAP
+plink --bfile MESA_AFA_lifted_final --bmerge /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig.bed  /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig.bim /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig.fam --make-bed --out MESA_AFA_mergedHAPMAP
 
 **will get error...need to remove snps in .missnp file generated
 
 plink --bfile /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig --exclude MESA_AFA_mergedHAPMAP-merge.missnp --make-bed --out hapmap19use
 
 **try merging again
-plink --bfile MESA_AFA_4hapmerge --bmerge hapmap19use.bed hapmap19use.bim hapmap19use.fam --make-bed --out MESA_AFA_mergedHAPMAP
+plink --bfile MESA_AFA_lifted_final --bmerge hapmap19use.bed hapmap19use.bim hapmap19use.fam --make-bed --out MESA_AFA_mergedHAPMAP
 
 **success!!!
 
 ***do the same with the other pops
 
-plink --bfile MESA_HIS_merged_autosome.geno0.01.sd.4pca --bmerge /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig.bed  /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig.bim /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig.fam --make-bed --out MESA_HIS_mergedHAPMAP
+plink --bfile MESA_HIS_lifted_final --bmerge /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig.bed  /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig.bim /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig.fam --make-bed --out MESA_HIS_mergedHAPMAP
 
 **will get error...need to remove snps in .missnp file generated
 
 plink --bfile /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig --exclude MESA_HIS_mergedHAPMAP-merge.missnp --make-bed --out hapmap19use
 
 **try merging again
-plink --bfile MESA_HIS_4hapmerge --bmerge hapmap19use.bed hapmap19use.bim hapmap19use.fam --make-bed --out MESA_HIS_mergedHAPMAP
+plink --bfile MESA_HIS_lifted_final --bmerge hapmap19use.bed hapmap19use.bim hapmap19use.fam --make-bed --out MESA_HIS_mergedHAPMAP
 
 **success!!!
-plink --bfile MESA_CAU_merged_autosome.geno0.01.sd.4pca --bmerge /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig.bed  /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig.bim /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig.fam --make-bed --out MESA_CAU_mergedHAPMAP
+plink --bfile MMESA_CAU_lifted_final --bmerge /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig.bed  /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig.bim /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig.fam --make-bed --out MESA_CAU_mergedHAPMAP
 
 **will get error...need to remove snps in .missnp file generated
 
 plink --bfile /home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/HM3_ASN_CEU_YRI_Unrelated_hg19_noAmbig --exclude MESA_CAU_mergedHAPMAP-merge.missnp --make-bed --out hapmap19use
 
 **try merging again
-plink --bfile MESA_CAU_4hapmerge --bmerge hapmap19use.bed hapmap19use.bim hapmap19use.fam --make-bed --out MESA_CAU_mergedHAPMAP
+plink --bfile MESA_CAU_lifted_final --bmerge hapmap19use.bed hapmap19use.bim hapmap19use.fam --make-bed --out MESA_CAU_mergedHAPMAP
 
 **success!!!
 
