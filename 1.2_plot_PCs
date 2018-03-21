@@ -1,0 +1,29 @@
+#use this as a template to plot population PCs with and without HapMap merged
+hapmappopinfo <- read.table("/home/lauren/MESA_dbGaP_55081/all_mesa_merged/hapmap_hg19/pop_HM3_hg19_forPCA.txt") %>% select(V1,V3)
+colnames(hapmappopinfo) <- c("pop","IID")
+fam_h<- read.table('/home/lauren/MESA_dbGaP_55081/all_mesa_merged/MESA_HIS_merged_hapmap.4pca.fam') %>% select(V1,V2)
+colnames(fam_h) <- c("FID","IID")
+popinfo <- left_join(fam_h,hapmappopinfo,by="IID")
+popinfo <- mutate(popinfo, pop=ifelse(grepl('T',IID),'Norway',as.character(pop))) %>% mutate(pop=ifelse(is.na(pop),'HIS',as.character(pop)))
+table(popinfo$pop)
+
+pcs_hishap <- read.table("/home/lauren/MESA_dbGaP_55081/all_mesa_merged/his_merged_auto.evec",skip=1)
+pcdf_hishap <- data.frame(popinfo,pcs_hishap[,2:11]) %>% rename(PC1=V2,PC2=V3,PC3=V4,PC4=V5,PC5=V6,PC6=V7,PC7=V8,PC8=V9,PC9=V10,PC10=V11)
+
+gwas_hishap <- filter(pcdf_hishap,pop=='HIS') %>% mutate(PATNO=IID)
+hm3 <- filter(pcdf_hishap,grepl('NA',IID))
+table(gwas_hishap$pop)
+table(hm3$pop)
+
+
+##calc proportion variance explained by each PC
+eval_hishap <- scan("/home/lauren/MESA_dbGaP_55081/all_mesa_merged/his_merged_auto.eval")[1:10]
+round(eval_hishap/sum(eval_hishap),3)
+#pdf(file=my.dir %&% "MESA_PCA.pdf")
+ggplot() + geom_point(data=pcdf_hishap,aes(x=PC1,y=PC2,col=pop,shape=pop))+geom_point(data=hm3,aes(x=PC1,y=PC2,col=pop,shape=pop))+ theme_bw() + scale_colour_brewer(palette="Set1")
+
+ggplot() + geom_point(data=gwas,aes(x=PC1,y=PC3,col=pop,shape=pop))+geom_point(data=hm3,aes(x=PC1,y=PC3,col=pop,shape=pop))+ theme_bw() + scale_colour_brewer(palette="Set1")
+
+ggplot() + geom_point(data=gwas,aes(x=PC2,y=PC3,col=pop,shape=pop))+geom_point(data=hm3,aes(x=PC2,y=PC3,col=pop,shape=pop))+ theme_bw() + scale_colour_brewer(palette="Set1")
+#dev.off()
+
